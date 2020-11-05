@@ -4,7 +4,7 @@
  * @param {string} [param="asc"] param - the sorting type "asc" or "desc"
  * @returns {string[]}
  */
-export function sortStrings(arr, param) {
+export function sortStrings(arr, param='asc') {
     let newArr = arr.concat();
         newArr.sort(function (a, b) {
                return a.localeCompare(b, ['ru', 'en'], {caseFirst: "upper"})
