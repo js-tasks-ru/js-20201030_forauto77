@@ -18,7 +18,7 @@ export default class NotificationMessage {
         
         this.element = document.createElement('div');
         this.element.innerHTML = `
-        <div class="notification success" style="--value:${this.duration / 1000}s">
+        <div class="notification ${this.type}" style="--value:${this.duration / 1000}s">
         <div class="timer"></div>
         <div class="inner-wrapper">
           <div class="notification-header">success</div>
@@ -32,8 +32,8 @@ export default class NotificationMessage {
         NotificationMessage.showedElement = this.element;
     }
 
-    show() {      
-        document.body.append(this.element);
+    show(toDocument = document.body) {      
+        toDocument.append(this.element);
         setTimeout(() => (this.remove()), this.duration);   
         
         return this.element
@@ -46,6 +46,5 @@ export default class NotificationMessage {
   
     destroy() {
         this.remove();
-        this.element = null;
     }
 }
