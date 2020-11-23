@@ -1,6 +1,8 @@
 
 export default class ColumnChart {
-  
+  data;
+  element;
+  subEleemnts;
 
     constructor({ url = '', range = {}, label = '', link = '' } = {}) {
         this.url = url;
@@ -25,11 +27,10 @@ export default class ColumnChart {
     this.range.to = to;
   }
     
-  async getData(from, to) {
+  async getData(from = new Date(), to = new Date()) {
     this.subElements.header.textContent = '';
     this.subElements.body.innerHTML = '';
     this.element.classList.add('column-chart_loading')
-
     const fromDate = this.getStringDate(from);
     const toDate = this.getStringDate(to);
     this.setNewRange(from, to);
@@ -74,7 +75,7 @@ export default class ColumnChart {
   getBody(data) {
     return Object.values(data).map(item => {
       const maxValue = Math.max(...Object.values(data));
-      const scale = 50 / maxValue;
+      const scale = this.chartHeight / maxValue;
       return `
       <div style="--value: ${Math.floor(item * scale)}" data-tooltip="${(item / maxValue * 100).toFixed(0)}%"></div>
       `;
