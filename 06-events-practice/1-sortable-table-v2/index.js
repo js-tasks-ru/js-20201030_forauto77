@@ -5,7 +5,6 @@ export default class SortableTable {
   constructor(header = [], {data = []} = {}) {
     this.header = header;
     this.data = data;
-    this.headerTitle = this.headerTitles(header);
     this.render();
     }
     
@@ -76,33 +75,19 @@ export default class SortableTable {
     `}).join('')
   }
 
-  headerTitles(header){
-    const headerTitles = [];      
-      for (const item of header){
-        if (item.id !== 'images'){
-          headerTitles.push(item.id)
-        }
-      };
-    return headerTitles
-  }
-
   tableCell(dataItem){      
-    let i = 0;
-    let result = this.tableCellImage(dataItem);   
-    
-      for (const item of this.headerTitle) {
-      result += `
-      <div class="sortable-table__cell">${dataItem[this.headerTitle[i++]]}</div>
-    `}
-    return result      
-  }
-
-  tableCellImage(dataItem){
     const getter = this.createGetter('images.url');
-      return this.header[0].id === 'images' ?
-          `<div class="sortable-table__cell">
-        <img class="sortable-table-image" alt="Image" src="${getter(dataItem)}">
-      </div>` : '';
+    return this.header.map(item => {
+      if (item.template) {
+        return `
+          <div class="sortable-table__cell">
+            <img class="sortable-table-image" alt="Image" src="${getter(dataItem)}">
+          </div>
+        `}
+      else { return `
+        <div class="sortable-table__cell">${dataItem[item.id]}</div>
+      `}
+    }).join('')  
   }
 
   createGetter(path) {
@@ -120,7 +105,6 @@ export default class SortableTable {
 
   getSubElements(element) {
       const elements = element.querySelectorAll('[data-element]');
-
       return [...elements].reduce((acc, item) => {
           acc[item.dataset.element] = item;
           return acc
@@ -136,18 +120,16 @@ export default class SortableTable {
       const sortTable = [...this.data];
       const currentHeaderItem = this.header.find(item => item.id === field);
       const sortType = currentHeaderItem ? currentHeaderItem.sortType : '';
-      let sortDirection;
-      switch (order) {
-          case 'asc': sortDirection = 1; break;
-          case 'desc': sortDirection = -1; break;
-          default: 0;
+      const sortDirection = {
+        asc: 1,
+        desc: -1
       }
     sortTable.sort( (item1, item2) => {
       const a = item1[field];
       const b = item2[field];
     switch(sortType){
-      case 'string': return sortDirection * a.localeCompare(b, ['ru', 'en'], {caseFirst: 'upper'});
-      case 'number': return sortDirection * (a - b);
+      case 'string': return sortDirection[order] * a.localeCompare(b, ['ru', 'en'], {caseFirst: 'upper'});
+      case 'number': return sortDirection[order] * (a - b);
       default: break;
     }  
     })
